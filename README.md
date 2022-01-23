@@ -1,4 +1,6 @@
-# React TODO
+# TODO_React
+
+School project to discover React and learn how to develop in tsx file.
 
 ## This project is in development and not finished
 
