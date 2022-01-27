@@ -50,3 +50,7 @@
     display: flex;
     justify-content: space-around;
 }
+
+.m0 {
+    margin: 0
+}

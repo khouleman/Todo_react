@@ -45,53 +45,81 @@ function App() {
     const [assignedTo, setAssignedTo] = useState("")
 
     const addList = () => {
-        // @ts-ignore
-        setState((prev) => {
-            return {
-                ...prev,
-                todo: {
-                    title: title,
-                    items: [
-                        {},
-                        ...prev.todo.items
-                    ]
-                }
+        setState({
+            ...state,
+            [title]: {
+                title: title,
+                items: []
             }
-        })
+        });
         setTitle("")
     }
 
 
+    const reorder = (list: any, startIndex: number, endIndex: number) => {
+        const result = Array.from(list);
+        const [removed] = result.splice(startIndex, 1);
+        result.splice(endIndex, 0, removed);
 
-    // @ts-ignore
-    const handleDragEnd = ({destination: destination, source: source}) => {
-        console.log("from", source)
-        console.log("to", destination)
+        return result;
+    }
+
+    const handleDragEnd = ({destination, source}: any) => {
+        console.log({destination, source, state});
+
+        const sourceId = source.droppableId;
+        const destinationId = destination.droppableId;
+        const newState: any = {...state};
 
         if (!destination) {
-            return
+            return;
         }
+
         if (destination.index === source.index && destination.droppableId === source.droppableId) {
             return
         }
 
-        //Creating a copy before removing it from state
-        // @ts-ignore
-        const itemCopy = {...state[source.droppableId].items[source.index]}
-        setState(prev => {
-            prev = {...prev}
+        if (sourceId === destinationId) {
+            const items = newState[sourceId].items;
+            newState[sourceId].items = reorder(items, source.index, destination.index);
+        } else {
+            const item = newState[sourceId].items[source.index];
+            newState[sourceId].items.splice(source.index, 1);
+            newState[destinationId].items.splice(destination.index, 0, item);
+        }
 
-            //remove from previous items array
-            // @ts-ignore
-            prev[source.droppableId].items.splice(source.index, 1)
-
-            //add to new items array location
-            // @ts-ignore
-            prev[destination.droppableId].items.splice(destination.index, 0, itemCopy)
-
-            return prev
-        })
+        setState(newState);
     }
+
+    // @ts-ignore
+    // const handleDragEnd = ({destination: destination, source: source}) => {
+    //     console.log("from", source)
+    //     console.log("to", destination)
+    //
+    //     if (!destination) {
+    //         return
+    //     }
+    //     if (destination.index === source.index && destination.droppableId === source.droppableId) {
+    //         return
+    //     }
+    //
+    //     //Creating a copy before removing it from state
+    //     // @ts-ignore
+    //     const itemCopy = {...state[source.droppableId].items[source.index]}
+    //     setState(prev => {
+    //         prev = {...prev}
+    //
+    //         //remove from previous items array
+    //         // @ts-ignore
+    //         prev[source.droppableId].items.splice(source.index, 1)
+    //
+    //         //add to new items array location
+    //         // @ts-ignore
+    //         prev[destination.droppableId].items.splice(destination.index, 0, itemCopy)
+    //
+    //         return prev
+    //     })
+    // }
 
     const addItem = () => {
         setState(prev => {
@@ -123,35 +151,33 @@ function App() {
             <div className={'form-todo'}>
                 <div className={'wrap'}>
                     <div className={'row'}>
-                        <p>Name of the new List :</p>
+                        <p className={'m0'}>Name of the new List :</p>
                         <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}/>
                     </div>
                     <button onClick={addList}>Add</button>
                 </div>
                 <div className={'wrap'}>
                     <div className={'row'}>
-                        <p>Name of the task :</p>
+                        <p className={'m0'}>Name of the task :</p>
                         <input type="text" value={name} onChange={(e) => setName(e.target.value)}/>
                     </div>
                     <div className={'row'}>
-                        <p>Description :</p>
+                        <p className={'m0'}>Description :</p>
                         <input type="text" value={description} onChange={(e) => setDescription(e.target.value)}/>
                     </div>
                     <div className={'row'}>
-                        <p>Priority :</p>
+                        <p className={'m0'}>Priority :</p>
                         <input type="text" value={priority} onChange={(e) => setPriority(e.target.value)}/>
                     </div>
                     <div className={'row'}>
-                        <p>Assigned to :</p>
+                        <p className={'m0'}>Assigned to :</p>
                         <input type="text" value={assignedTo} onChange={(e) => setAssignedTo(e.target.value)}/>
                     </div>
                     <button onClick={addItem}>Add</button>
                 </div>
             </div>
             <div className={'todo'}>
-                <DragDropContext onDragEnd={(_result) => {
-                    handleDragEnd({destination: _result.destination, source: _result.source})
-                }}>
+                <DragDropContext onDragEnd={handleDragEnd}>
                     {_.map(state, (data, key) => {
                         return (
                             <div className={"column"}>
