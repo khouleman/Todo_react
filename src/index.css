@@ -1,7 +1,7 @@
 .App {
     display: flex;
     width: 100%;
-    justify-content: space-around;
+    flex-direction: column;
 }
 
 .App .column {
@@ -9,23 +9,44 @@
 }
 
 .droppable-col {
-    width: 100%;
-    background-color: gray;
+    background-color: black;
     padding: 10px 10px 0 10px;
     border-radius: 7px;
     display: flex;
     flex-direction: column;
+    min-height: 174px;
 }
 
 .item {
     margin-bottom: 10px;
-    background-color: gray;
-    color: white;
-    border: 1px solid white;
+    background-color: #c7c7c7;
+    color: black;
+    border: 1px solid grey;
     padding: 5px;
     border-radius: 7px;
 }
 
 .item.dragging {
-    background-color: yellow;
+    background-color: grey;
+}
+
+.wrap {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.todo {
+    display: flex;
+    justify-content: space-around;
+}
+
+.form-todo {
+    display: flex;
+    justify-content: space-around;
 }
