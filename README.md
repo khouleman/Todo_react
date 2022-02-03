@@ -1,5 +1,7 @@
 # TODO_React
 
+Demuru Nathan
+
 School project to discover React and learn how to develop in tsx file.
 
 ## This project is in development and not finished
