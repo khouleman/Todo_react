@@ -1,3 +1,7 @@
+body {
+    margin: 0;
+}
+
 .App {
     display: flex;
     width: 100%;
@@ -9,7 +13,7 @@
 }
 
 .droppable-col {
-    background-color: black;
+    background-color: #e8c1fa;
     padding: 10px 10px 0 10px;
     border-radius: 7px;
     display: flex;
@@ -19,15 +23,15 @@
 
 .item {
     margin-bottom: 10px;
-    background-color: #c7c7c7;
+    background-color: #f3f0f0;
     color: black;
-    border: 1px solid grey;
+    border: 1px solid #e8c1fa;
     padding: 5px;
     border-radius: 7px;
 }
 
 .item.dragging {
-    background-color: grey;
+    background-color: #d0c9c9;
 }
 
 .wrap {
@@ -53,4 +57,25 @@
 
 .m0 {
     margin: 0
+}
+
+.appbar {
+    width: 10%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.navbar {
+    background-color: #e8c1fa !important;
+}
+
+.inputForm {
+
+}
+
+.boxContent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }

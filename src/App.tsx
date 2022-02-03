@@ -2,21 +2,66 @@ import React, {useState} from 'react';
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd';
 import _ from "lodash"
 import {v4 as uuidv4} from 'uuid';
+import {AppBar, Box, Button, IconButton, Modal, styled, TextField, Toolbar, Typography} from "@mui/material";
+import Swal from 'sweetalert2'
+import {green, purple} from "@mui/material/colors";
+
+const ColorButton = styled(Button)(({theme}) => ({
+    color: theme.palette.getContrastText(purple[300]),
+    backgroundColor: "#d78afa",
+    '&:hover': {
+        backgroundColor: purple[500],
+    },
+}));
+
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
+
+const CssTextField = styled(TextField)({
+    margin: 10,
+    '& label.Mui-focused': {
+        color: 'green',
+    },
+    '& .MuiInput-underline:after': {
+        borderBottomColor: 'green',
+    },
+    '& .MuiOutlinedInput-root': {
+        '& fieldset': {
+            borderColor: 'red',
+        },
+        '&:hover fieldset': {
+            borderColor: 'grey',
+        },
+        '&.Mui-focused fieldset': {
+            borderColor: 'green',
+        },
+    },
+});
+
 
 const item = {
     id: uuidv4(),
-    name: "Clean the house",
-    description: "Lave la maison",
-    priority: "1",
-    assignedTo: "Me",
+    name: "Clean",
+    description: "House",
+    priority: "Important",
+    assignedTo: "Nathan",
 }
 
 const item2 = {
     id: uuidv4(),
-    name: "Wash the car",
-    description: "Lave la maison",
-    priority: "1",
-    assignedTo: "Me",
+    name: "Wash",
+    description: "Car",
+    priority: "If you want",
+    assignedTo: "P-J",
 }
 
 function App() {
@@ -53,6 +98,13 @@ function App() {
             }
         });
         setTitle("")
+        setOpenList(false);
+        Swal.fire({
+            icon: 'success',
+            title: 'Your list has been created',
+            showConfirmButton: false,
+            timer: 1500
+        })
     }
 
 
@@ -144,85 +196,132 @@ function App() {
         setDescription("")
         setPriority("")
         setAssignedTo("")
+
+        setOpenCard(false);
+        Swal.fire({
+            icon: 'success',
+            title: 'Your card has been created',
+            showConfirmButton: false,
+            timer: 1500
+        })
     }
 
+    const [openList, setOpenList] = React.useState(false);
+    const [openCard, setOpenCard] = React.useState(false);
+    const handleOpenCard = () => setOpenCard(true);
+    const handleOpenList = () => setOpenList(true);
+    const handleCloseCard = () => setOpenCard(false);
+    const handleCloseList = () => setOpenList(false);
+
     return (
-        <div className='App'>
-            <div className={'form-todo'}>
-                <div className={'wrap'}>
-                    <div className={'row'}>
-                        <p className={'m0'}>Name of the new List :</p>
-                        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}/>
-                    </div>
-                    <button onClick={addList}>Add</button>
-                </div>
-                <div className={'wrap'}>
-                    <div className={'row'}>
-                        <p className={'m0'}>Name of the task :</p>
-                        <input type="text" value={name} onChange={(e) => setName(e.target.value)}/>
-                    </div>
-                    <div className={'row'}>
-                        <p className={'m0'}>Description :</p>
-                        <input type="text" value={description} onChange={(e) => setDescription(e.target.value)}/>
-                    </div>
-                    <div className={'row'}>
-                        <p className={'m0'}>Priority :</p>
-                        <input type="text" value={priority} onChange={(e) => setPriority(e.target.value)}/>
-                    </div>
-                    <div className={'row'}>
-                        <p className={'m0'}>Assigned to :</p>
-                        <input type="text" value={assignedTo} onChange={(e) => setAssignedTo(e.target.value)}/>
-                    </div>
-                    <button onClick={addItem}>Add</button>
-                </div>
-            </div>
-            <div className={'todo'}>
-                <DragDropContext onDragEnd={handleDragEnd}>
-                    {_.map(state, (data, key) => {
-                        return (
-                            <div className={"column"}>
-                                <h3>{data.title}</h3>
-                                <Droppable droppableId={key}>
-                                    {(provided) => {
-                                        return (
-                                            <div
-                                                ref={provided.innerRef}
-                                                {...provided.droppableProps}
-                                                className={"droppable-col"}
-                                            >
-                                                {data.items.map((el, index) => {
-                                                    return (
-                                                        <Draggable key={el.id} index={index} draggableId={el.id}>
-                                                            {(provided, snapchot) => {
-                                                                return (
-                                                                    <div
-                                                                        className={`item ${snapchot.isDragging && "dragging"}`}
-                                                                        ref={provided.innerRef}
-                                                                        {...provided.draggableProps}
-                                                                        {...provided.dragHandleProps}
-                                                                    >
-                                                                        <p>{el.name}</p>
-                                                                        <p>{el.description}</p>
-                                                                        <p>{el.priority}</p>
-                                                                        <p>{el.assignedTo}</p>
-                                                                    </div>
-                                                                )
-                                                            }}
-                                                        </Draggable>
-                                                    )
-                                                })}
-                                                {provided.placeholder}
-                                            </div>
-                                        )
-                                    }}
-                                </Droppable>
+        <><Box sx={{flexGrow: 1}}>
+            <AppBar position="static" className={'navbar'}>
+                <Toolbar className={'appbar'}>
+
+                    <ColorButton onClick={handleOpenList}>New list</ColorButton>
+                    <Modal
+                        open={openList}
+                        onClose={handleCloseList}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                    >
+                        <Box sx={style}>
+                            <div className={'boxContent'}>
+                                <Typography id="modal-modal-title" variant="h2" component="h2">
+                                    <CssTextField label="Name of the new List" id="custom-css-outlined-input"
+                                                  className={'inputForm'} value={title}
+                                                  onChange={(e) => setTitle(e.target.value)}/>
+                                </Typography>
+                                <div>
+                                <Button variant="contained" onClick={addList} disabled={title.length === 0}
+                                        color="success">
+                                    Add List
+                                </Button>
+                                </div>
                             </div>
-                        )
-                    })}
-                </DragDropContext>
+                        </Box>
+                    </Modal>
+
+
+                    <ColorButton onClick={handleOpenCard}>New card</ColorButton>
+                    <Modal
+                        open={openCard}
+                        onClose={handleCloseCard}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                    >
+                        <Box sx={style}>
+                            <div className={'boxContent'}>
+                                <Typography id="modal-modal-title" variant="h2" component="h2" className={'boxContent'}>
+                                    <CssTextField label="Name of the task" id="custom-css-outlined-input" value={name}
+                                                  onChange={(e) => setName(e.target.value)}/>
+                                    <CssTextField label="Description" id="custom-css-outlined-input" value={description}
+                                                  onChange={(e) => setDescription(e.target.value)}/>
+                                    <CssTextField label="Priority" id="custom-css-outlined-input" value={priority}
+                                                  onChange={(e) => setPriority(e.target.value)}/>
+                                    <CssTextField label="Assigned to" id="custom-css-outlined-input" value={assignedTo}
+                                                  onChange={(e) => setAssignedTo(e.target.value)}/>
+                                </Typography>
+                                <Button variant="contained" onClick={addItem} color="success"
+                                        disabled={name.length === 0 || description.length === 0 || priority.length === 0 || assignedTo.length === 0}>
+                                    Add card
+                                </Button>
+                            </div>
+                        </Box>
+                    </Modal>
+                </Toolbar>
+            </AppBar>
+        </Box>
+            <div className='App'>
+                <div className={'todo'}>
+                    <DragDropContext onDragEnd={handleDragEnd}>
+                        {_.map(state, (data, key) => {
+                            return (
+                                <div className={"column"}>
+                                    <h3>{data.title}</h3>
+                                    <Droppable droppableId={key}>
+                                        {(provided) => {
+                                            return (
+                                                <div
+                                                    ref={provided.innerRef}
+                                                    {...provided.droppableProps}
+                                                    className={"droppable-col"}
+                                                >
+                                                    {data.items.map((el, index) => {
+                                                        return (
+                                                            <Draggable key={el.id} index={index} draggableId={el.id}>
+                                                                {(provided, snapchot) => {
+                                                                    return (
+                                                                        <div
+                                                                            className={`item ${snapchot.isDragging && "dragging"}`}
+                                                                            ref={provided.innerRef}
+                                                                            {...provided.draggableProps}
+                                                                            {...provided.dragHandleProps}
+                                                                        >
+                                                                            <p>{el.name}</p>
+                                                                            <p>{el.description}</p>
+                                                                            <p>{el.priority}</p>
+                                                                            <p>{el.assignedTo}</p>
+                                                                        </div>
+                                                                    );
+                                                                }}
+                                                            </Draggable>
+                                                        );
+                                                    })}
+                                                    {provided.placeholder}
+                                                </div>
+                                            );
+                                        }}
+                                    </Droppable>
+                                </div>
+                            );
+                        })}
+                    </DragDropContext>
+                </div>
             </div>
-        </div>
-    );
+        </>
+    )
+        ;
 }
 
 export default App;
