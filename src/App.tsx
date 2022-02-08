@@ -88,6 +88,7 @@ function App() {
     const [description, setDescription] = useState("")
     const [priority, setPriority] = useState("")
     const [assignedTo, setAssignedTo] = useState("")
+    // const [card, setCard] = useState([name, description, priority, assignedTo])
 
     const addList = () => {
         setState({
@@ -97,6 +98,7 @@ function App() {
                 items: []
             }
         });
+
         setTitle("")
         setOpenList(false);
         Swal.fire({
@@ -107,8 +109,8 @@ function App() {
         })
     }
 
-
-    const reorder = (list: any, startIndex: number, endIndex: number) => {
+    // @ts-ignore
+    const reorder = (list, startIndex: number, endIndex: number) => {
         const result = Array.from(list);
         const [removed] = result.splice(startIndex, 1);
         result.splice(endIndex, 0, removed);
@@ -116,9 +118,8 @@ function App() {
         return result;
     }
 
-    const handleDragEnd = ({destination, source}: any) => {
-        console.log({destination, source, state});
-
+    // @ts-ignore
+    const handleDragEnd = ({destination, source}: Object) => {
         const sourceId = source.droppableId;
         const destinationId = destination.droppableId;
         const newState: any = {...state};
@@ -143,35 +144,41 @@ function App() {
         setState(newState);
     }
 
-    // @ts-ignore
-    // const handleDragEnd = ({destination: destination, source: source}) => {
-    //     console.log("from", source)
-    //     console.log("to", destination)
-    //
-    //     if (!destination) {
-    //         return
-    //     }
-    //     if (destination.index === source.index && destination.droppableId === source.droppableId) {
-    //         return
-    //     }
-    //
-    //     //Creating a copy before removing it from state
-    //     // @ts-ignore
-    //     const itemCopy = {...state[source.droppableId].items[source.index]}
-    //     setState(prev => {
-    //         prev = {...prev}
-    //
-    //         //remove from previous items array
-    //         // @ts-ignore
-    //         prev[source.droppableId].items.splice(source.index, 1)
-    //
-    //         //add to new items array location
-    //         // @ts-ignore
-    //         prev[destination.droppableId].items.splice(destination.index, 0, itemCopy)
-    //
-    //         return prev
-    //     })
-    // }
+    const removeTodo = () => {
+
+    }
+    const modifyItem = () => {
+        // setState(prev => {
+        //     return {
+        //         ...prev,
+        //         todo: {
+        //             title: "todo",
+        //             items: [
+        //                 {
+        //                     id: uuidv4(),
+        //                     name: name,
+        //                     description: description,
+        //                     priority: priority,
+        //                     assignedTo: assignedTo,
+        //                 },
+        //                 ...prev.todo.items
+        //             ]
+        //         }
+        //     }
+        // })
+
+        setName("")
+        setDescription("")
+        setPriority("")
+        setAssignedTo("")
+        setOpenModify(false)
+        Swal.fire({
+            icon: 'success',
+            title: 'Your card has been modified',
+            showConfirmButton: false,
+            timer: 1500
+        })
+    }
 
     const addItem = () => {
         setState(prev => {
@@ -192,6 +199,11 @@ function App() {
                 }
             }
         })
+
+        // const newCard = [card, ...card];
+        // // @ts-ignore
+        // setCard(newCard);
+
         setName("")
         setDescription("")
         setPriority("")
@@ -208,6 +220,12 @@ function App() {
 
     const [openList, setOpenList] = React.useState(false);
     const [openCard, setOpenCard] = React.useState(false);
+    const [openModify, setOpenModify] = React.useState(false);
+    const handleOpenModify = () => {
+        // console.log({...card})
+        setOpenModify(true)
+    }
+    const handleCloseModify = () => setOpenModify(false);
     const handleOpenCard = () => setOpenCard(true);
     const handleOpenList = () => setOpenList(true);
     const handleCloseCard = () => setOpenCard(false);
@@ -302,6 +320,36 @@ function App() {
                                                                             <p>{el.description}</p>
                                                                             <p>{el.priority}</p>
                                                                             <p>{el.assignedTo}</p>
+
+                                                                            <ColorButton onClick={handleOpenModify}>Modify</ColorButton>
+                                                                            <ColorButton onClick={removeTodo}>Remove</ColorButton>
+                                                                            <Modal
+                                                                                open={openModify}
+                                                                                onClose={handleCloseModify}
+                                                                                aria-labelledby="modal-modal-title"
+                                                                                aria-describedby="modal-modal-description"
+                                                                            >
+                                                                                <Box sx={style}>
+                                                                                    <div className={'boxContent'}>
+                                                                                        <Typography id="modal-modal-title" variant="h2" component="h2" className={'boxContent'}>
+                                                                                            <CssTextField label="Name of the task" id="custom-css-outlined-input" value={name}
+                                                                                                          onChange={(e) => setName(e.target.value)}/>
+                                                                                            <CssTextField label="Description" id="custom-css-outlined-input" value={description}
+                                                                                                          onChange={(e) => setDescription(e.target.value)}/>
+                                                                                            <CssTextField label="Priority" id="custom-css-outlined-input" value={priority}
+                                                                                                          onChange={(e) => setPriority(e.target.value)}/>
+                                                                                            <CssTextField label="Assigned to" id="custom-css-outlined-input" value={assignedTo}
+                                                                                                          onChange={(e) => setAssignedTo(e.target.value)}/>
+                                                                                        </Typography>
+                                                                                        <div>
+                                                                                            <Button variant="contained" onClick={modifyItem} color="success"
+                                                                                                    disabled={name.length === 0 || description.length === 0 || priority.length === 0 || assignedTo.length === 0}>
+                                                                                                Modify
+                                                                                            </Button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </Box>
+                                                                            </Modal>
                                                                         </div>
                                                                     );
                                                                 }}
