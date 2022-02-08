@@ -2,9 +2,9 @@ import React, {useState} from 'react';
 import {DragDropContext, Draggable, Droppable} from 'react-beautiful-dnd';
 import _ from "lodash"
 import {v4 as uuidv4} from 'uuid';
-import {AppBar, Box, Button, IconButton, Modal, styled, TextField, Toolbar, Typography} from "@mui/material";
+import {AppBar, Box, Button, Modal, styled, TextField, Toolbar, Typography} from "@mui/material";
 import Swal from 'sweetalert2'
-import {green, purple} from "@mui/material/colors";
+import {purple} from "@mui/material/colors";
 
 const ColorButton = styled(Button)(({theme}) => ({
     color: theme.palette.getContrastText(purple[300]),
@@ -144,33 +144,32 @@ function App() {
         setState(newState);
     }
 
-    const removeTodo = () => {
+    const removeTodo = (id: string) => {
+        // @ts-ignore
+        document.getElementById(id).style.display = "none"
 
     }
     const modifyItem = () => {
-        // setState(prev => {
-        //     return {
-        //         ...prev,
-        //         todo: {
-        //             title: "todo",
-        //             items: [
-        //                 {
-        //                     id: uuidv4(),
-        //                     name: name,
-        //                     description: description,
-        //                     priority: priority,
-        //                     assignedTo: assignedTo,
-        //                 },
-        //                 ...prev.todo.items
-        //             ]
-        //         }
-        //     }
-        // })
 
-        setName("")
-        setDescription("")
-        setPriority("")
-        setAssignedTo("")
+        setState(prev => {
+            return {
+                ...prev,
+                todo: {
+                    title: "Todo",
+                    items: [
+                        {
+                            id: uuidv4(),
+                            name: name,
+                            description: description,
+                            priority: priority,
+                            assignedTo: assignedTo,
+                        },
+                        ...prev.todo.items
+                    ]
+                }
+            }
+        })
+
         setOpenModify(false)
         Swal.fire({
             icon: 'success',
@@ -221,8 +220,12 @@ function App() {
     const [openList, setOpenList] = React.useState(false);
     const [openCard, setOpenCard] = React.useState(false);
     const [openModify, setOpenModify] = React.useState(false);
-    const handleOpenModify = () => {
-        // console.log({...card})
+    const handleOpenModify = (id: string, name: string, description: string, priority: string, assignedTo: string) => {
+        console.log(id)
+        setName(name)
+        setDescription(description)
+        setPriority(priority)
+        setAssignedTo(assignedTo)
         setOpenModify(true)
     }
     const handleCloseModify = () => setOpenModify(false);
@@ -251,10 +254,10 @@ function App() {
                                                   onChange={(e) => setTitle(e.target.value)}/>
                                 </Typography>
                                 <div>
-                                <Button variant="contained" onClick={addList} disabled={title.length === 0}
-                                        color="success">
-                                    Add List
-                                </Button>
+                                    <Button variant="contained" onClick={addList} disabled={title.length === 0}
+                                            color="success">
+                                        Add List
+                                    </Button>
                                 </div>
                             </div>
                         </Box>
@@ -315,14 +318,17 @@ function App() {
                                                                             ref={provided.innerRef}
                                                                             {...provided.draggableProps}
                                                                             {...provided.dragHandleProps}
+                                                                            id={el.id}
                                                                         >
                                                                             <p>{el.name}</p>
                                                                             <p>{el.description}</p>
                                                                             <p>{el.priority}</p>
                                                                             <p>{el.assignedTo}</p>
 
-                                                                            <ColorButton onClick={handleOpenModify}>Modify</ColorButton>
-                                                                            <ColorButton onClick={removeTodo}>Remove</ColorButton>
+                                                                            <ColorButton
+                                                                                onClick={() => handleOpenModify(el.id, el.name, el.description, el.priority, el.assignedTo)}>Modify</ColorButton>
+                                                                            <ColorButton
+                                                                                onClick={() => removeTodo(el.id)}>Remove</ColorButton>
                                                                             <Modal
                                                                                 open={openModify}
                                                                                 onClose={handleCloseModify}
@@ -331,18 +337,35 @@ function App() {
                                                                             >
                                                                                 <Box sx={style}>
                                                                                     <div className={'boxContent'}>
-                                                                                        <Typography id="modal-modal-title" variant="h2" component="h2" className={'boxContent'}>
-                                                                                            <CssTextField label="Name of the task" id="custom-css-outlined-input" value={name}
-                                                                                                          onChange={(e) => setName(e.target.value)}/>
-                                                                                            <CssTextField label="Description" id="custom-css-outlined-input" value={description}
-                                                                                                          onChange={(e) => setDescription(e.target.value)}/>
-                                                                                            <CssTextField label="Priority" id="custom-css-outlined-input" value={priority}
-                                                                                                          onChange={(e) => setPriority(e.target.value)}/>
-                                                                                            <CssTextField label="Assigned to" id="custom-css-outlined-input" value={assignedTo}
-                                                                                                          onChange={(e) => setAssignedTo(e.target.value)}/>
+                                                                                        <Typography
+                                                                                            id="modal-modal-title"
+                                                                                            variant="h2" component="h2"
+                                                                                            className={'boxContent'}>
+                                                                                            <CssTextField
+                                                                                                label="Name of the task"
+                                                                                                id="custom-css-outlined-input"
+                                                                                                value={name}
+                                                                                                onChange={(e) => setName(e.target.value)}/>
+                                                                                            <CssTextField
+                                                                                                label="Description"
+                                                                                                id="custom-css-outlined-input"
+                                                                                                value={description}
+                                                                                                onChange={(e) => setDescription(e.target.value)}/>
+                                                                                            <CssTextField
+                                                                                                label="Priority"
+                                                                                                id="custom-css-outlined-input"
+                                                                                                value={priority}
+                                                                                                onChange={(e) => setPriority(e.target.value)}/>
+                                                                                            <CssTextField
+                                                                                                label="Assigned to"
+                                                                                                id="custom-css-outlined-input"
+                                                                                                value={assignedTo}
+                                                                                                onChange={(e) => setAssignedTo(e.target.value)}/>
                                                                                         </Typography>
                                                                                         <div>
-                                                                                            <Button variant="contained" onClick={modifyItem} color="success"
+                                                                                            <Button variant="contained"
+                                                                                                    onClick={modifyItem}
+                                                                                                    color="success"
                                                                                                     disabled={name.length === 0 || description.length === 0 || priority.length === 0 || assignedTo.length === 0}>
                                                                                                 Modify
                                                                                             </Button>
