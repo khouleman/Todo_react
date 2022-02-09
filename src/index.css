@@ -48,6 +48,7 @@ body {
 .todo {
     display: flex;
     justify-content: space-around;
+    flex-wrap: wrap;
 }
 
 .form-todo {
@@ -60,9 +61,14 @@ body {
 }
 
 .appbar {
-    width: 10%;
+    width: 20%;
     display: flex;
     justify-content: space-between;
+}
+
+.mr {
+    display: flex;
+    justify-content: space-around;
 }
 
 .navbar {
